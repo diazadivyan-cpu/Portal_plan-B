@@ -1,0 +1,858 @@
+:root {
+  --space-void: #050a18;
+  --space-deep: #0b162c;
+  --card-cosmic: rgba(13, 29, 58, 0.72);
+  --input-cosmic: #0a1931;
+  --cyan-aurora: #17b9e6;
+  --violet-nebula: #7456f1;
+  --violet-light: #a78bfa;
+  --star-white: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-cosmic: rgba(56, 189, 248, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at 50% 15%, #10254a 0%, var(--space-deep) 48%, var(--space-void) 100%);
+  color: var(--star-white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== LATAR BELAKANG GALAKSI, BINTANG & NEBULA ===== */
+.galaxy-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.nebula-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.32;
+  animation: nebulaDrift 18s ease-in-out infinite alternate;
+}
+
+.nebula-1 {
+  width: 480px;
+  height: 480px;
+  top: -10%;
+  left: -5%;
+  background: radial-gradient(circle, var(--cyan-aurora), transparent 70%);
+}
+
+.nebula-2 {
+  width: 520px;
+  height: 520px;
+  bottom: -15%;
+  right: -5%;
+  background: radial-gradient(circle, var(--violet-nebula), transparent 70%);
+  animation-delay: -6s;
+}
+
+@keyframes nebulaDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(35px, 25px) scale(1.12); }
+}
+
+/* Bintang Berkelip */
+.stars-layer {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #ffffff, transparent),
+    radial-gradient(1px 1px at 28% 42%, #bae6fd, transparent),
+    radial-gradient(2px 2px at 45% 12%, #ffffff, transparent),
+    radial-gradient(1.2px 1.2px at 68% 28%, #c4b5fd, transparent),
+    radial-gradient(1.5px 1.5px at 84% 16%, #ffffff, transparent),
+    radial-gradient(1px 1px at 18% 76%, #ffffff, transparent),
+    radial-gradient(1.8px 1.8px at 52% 84%, #7dd3fc, transparent),
+    radial-gradient(1.2px 1.2px at 78% 68%, #ffffff, transparent),
+    radial-gradient(1.5px 1.5px at 91% 82%, #e0e7ff, transparent),
+    radial-gradient(1px 1px at 36% 62%, #ffffff, transparent);
+  background-size: 550px 550px;
+  animation: starTwinkle 5s ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+  0% { opacity: 0.55; }
+  100% { opacity: 1; }
+}
+
+/* Bintang Jatuh (Micro-Animation) */
+.shooting-stars span {
+  position: absolute;
+  top: 10%;
+  left: 80%;
+  width: 110px;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), transparent);
+  transform: rotate(-35deg);
+  opacity: 0;
+  animation: shootingStar 9s linear infinite;
+}
+
+.shooting-stars span:nth-child(2) {
+  top: 35%;
+  left: 92%;
+  animation-delay: 3.5s;
+}
+
+.shooting-stars span:nth-child(3) {
+  top: 5%;
+  left: 45%;
+  animation-delay: 6.5s;
+}
+
+@keyframes shootingStar {
+  0% { transform: translate(0, 0) rotate(-35deg); opacity: 0; }
+  4% { opacity: 1; }
+  14% { transform: translate(-420px, 290px) rotate(-35deg); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* ===== HALAMAN LOGIN PERSIS REFERENSI GALAKSI ===== */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.galaxy-login-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(180deg, rgba(16, 36, 70, 0.88) 0%, rgba(10, 23, 48, 0.94) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(56, 189, 248, 0.16);
+  border-radius: 22px;
+  padding: 36px 32px 32px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+/* Garis Cahaya Gradasi di Puncak Kartu */
+.card-top-beam {
+  position: absolute;
+  top: 0;
+  left: 16%;
+  right: 16%;
+  height: 3px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(90deg, var(--cyan-aurora), var(--violet-nebula));
+  box-shadow: 0 2px 16px rgba(23, 185, 230, 0.85);
+}
+
+/* Logo Melingkar dengan Micro-Animation Mengambang */
+.logo-orbit {
+  width: 108px;
+  height: 108px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.6), rgba(116, 86, 241, 0.6));
+  box-shadow: 0 0 28px rgba(23, 185, 230, 0.35);
+  animation: cosmicFloat 4.5s ease-in-out infinite;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.logo-orbit:hover {
+  transform: scale(1.06) rotate(3deg);
+  box-shadow: 0 0 36px rgba(116, 86, 241, 0.65);
+}
+
+.logo-orbit img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+@keyframes cosmicFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.brand-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.app-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--star-white);
+  letter-spacing: 0.3px;
+}
+
+.app-campus {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.login-heading {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-heading h1 {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--star-white);
+  margin-bottom: 6px;
+}
+
+.login-heading p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Animasi Masuk Kartu */
+.animate-card-in {
+  animation: cardReveal 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardReveal {
+  0% { opacity: 0; transform: translateY(18px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ===== FORM & MICRO-ANIMATIONS INPUT ===== */
+.form-group {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 7px;
+  transition: color 0.2s ease;
+}
+
+.form-group:focus-within label {
+  color: var(--cyan-aurora);
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  background: var(--input-cosmic);
+  color: var(--star-white);
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #64748b;
+}
+
+input:disabled { opacity: 0.55; cursor: not-allowed; }
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--cyan-aurora);
+  box-shadow: 0 0 0 3px rgba(23, 185, 230, 0.18), 0 0 18px rgba(23, 185, 230, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ===== TOMBOL GRADASI CYAN-UNGU + SHIMMER MICRO-ANIMATION ===== */
+.btn-galaxy-submit, .btn-nebula, .btn-cyan-outline, .btn-nebula-outline, .btn-sm {
+  position: relative;
+  overflow: hidden;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-size: 0.94rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.22s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+.btn-galaxy-submit {
+  background: linear-gradient(90deg, var(--cyan-aurora) 0%, var(--violet-nebula) 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 22px rgba(72, 134, 236, 0.35);
+}
+
+/* Efek Kilau Cahaya Melintas Saat Hover */
+.btn-galaxy-submit::after, .btn-nebula::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+}
+
+.btn-galaxy-submit:hover:not(:disabled)::after,
+.btn-nebula:hover:not(:disabled)::after {
+  left: 150%;
+}
+
+.btn-galaxy-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(116, 86, 241, 0.5);
+}
+
+.btn-galaxy-submit:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-galaxy-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-nebula {
+  background: linear-gradient(135deg, var(--violet-light), var(--violet-nebula));
+  color: #fff;
+}
+
+.btn-cyan-outline {
+  background: transparent;
+  border: 1px solid var(--cyan-aurora);
+  color: var(--cyan-aurora);
+}
+
+.btn-cyan-outline:hover {
+  background: rgba(23, 185, 230, 0.14);
+}
+
+.btn-nebula-outline {
+  background: transparent;
+  border: 1px solid var(--violet-light);
+  color: var(--violet-light);
+}
+
+.btn-nebula-outline:hover {
+  background: rgba(167, 139, 250, 0.14);
+}
+
+.auth-links { margin-top: 16px; text-align: center; }
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.link-btn:hover {
+  color: var(--cyan-aurora);
+  text-decoration: underline;
+}
+
+/* ===== GLASSMORPHISM DASHBOARD & KOMPONEN ===== */
+.glass-card, .glass-panel {
+  background: var(--card-cosmic);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-cosmic);
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(2, 6, 23, 0.55);
+}
+
+.glass-card { padding: 22px; }
+
+.hover-lift {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease, box-shadow 0.28s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  border-color: rgba(23, 185, 230, 0.55);
+  box-shadow: 0 14px 36px rgba(23, 185, 230, 0.18);
+}
+
+.w-100 { width: 100%; }
+.max-500 { max-width: 520px; }
+.mt-15 { margin-top: 15px; }
+.mt-20 { margin-top: 20px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-15 { margin-bottom: 15px; }
+.mb-20 { margin-bottom: 20px; }
+.hidden { display: none !important; }
+
+/* ===== LAYOUT UTAMA ===== */
+.app-layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 265px;
+  border-radius: 0 20px 20px 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-cosmic);
+}
+
+.sidebar-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--cyan-aurora);
+  object-fit: cover;
+}
+
+.role-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: rgba(116, 86, 241, 0.32);
+  border: 1px solid var(--violet-light);
+  color: var(--star-white);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+  flex: 1;
+}
+
+.nav-item {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 11px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.22s ease;
+}
+
+.nav-item:hover, .nav-item.active {
+  background: linear-gradient(90deg, rgba(23, 185, 230, 0.16), rgba(116, 86, 241, 0.16));
+  border-color: rgba(23, 185, 230, 0.42);
+  color: var(--star-white);
+  transform: translateX(4px);
+}
+
+.tab-content {
+  animation: tabFadeIn 0.35s ease forwards;
+}
+
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== AVATAR PROFIL ===== */
+.user-profile-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-cosmic);
+}
+
+.user-avatar-sm {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--cyan-aurora);
+  flex-shrink: 0;
+}
+
+.table-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--cyan-aurora);
+}
+
+.user-mini-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.user-mini-info strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-avatar-editor {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px;
+  background: rgba(5, 10, 24, 0.55);
+  border: 1px solid var(--border-cosmic);
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+
+.avatar-preview-ring {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, var(--cyan-aurora), var(--violet-nebula));
+  flex-shrink: 0;
+}
+
+.avatar-preview-ring img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-upload-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.main-content { flex: 1; padding: 20px 28px; max-width: 100%; }
+
+/* ===== TOPBAR & JAM DIGITAL GLOBAL ===== */
+.topbar {
+  padding: 14px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--cyan-aurora);
+  color: var(--cyan-aurora);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.live-clock-widget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(5, 10, 24, 0.78);
+  border: 1px solid var(--cyan-aurora);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cyan-aurora);
+  box-shadow: 0 0 16px rgba(23, 185, 230, 0.22);
+}
+
+.pulse-dot {
+  width: 9px;
+  height: 9px;
+  background: #34d399;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #34d399;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* ===== GRID & TABEL ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.grid-2-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 20px;
+}
+
+.grid-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.flex-end { display: flex; align-items: flex-end; }
+.stat-value { font-size: 1.65rem; margin: 8px 0 4px; }
+.text-cyan { color: var(--cyan-aurora); }
+.text-violet { color: var(--violet-light); }
+.text-pearl { color: var(--star-white); }
+.text-muted { color: var(--text-muted); font-size: 0.86rem; }
+.small-info { font-size: 0.85rem; margin-bottom: 10px; }
+
+.table-responsive { overflow-x: auto; margin-top: 14px; }
+
+.galaxy-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.galaxy-table th, .galaxy-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.14);
+  vertical-align: middle;
+}
+
+.galaxy-table th { color: var(--cyan-aurora); font-weight: 600; }
+
+.galaxy-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.galaxy-table tbody tr:hover {
+  background: rgba(23, 185, 230, 0.06);
+}
+
+.pwd-mask {
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+
+/* ===== KAMERA ABSENSI REAL-TIME ===== */
+.gps-status-box {
+  background: rgba(23, 185, 230, 0.1);
+  border: 1px dashed var(--cyan-aurora);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  margin-bottom: 14px;
+}
+
+.camera-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #030712;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid var(--cyan-aurora);
+  margin-bottom: 14px;
+}
+
+.camera-wrapper video, .camera-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-controls { display: flex; gap: 10px; }
+
+.inline-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.inline-form input { flex: 1; min-width: 200px; }
+
+/* ===== MODAL ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.84);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 999;
+}
+
+.modal-box { width: 100%; max-width: 440px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.error-msg { color: #fb7185; font-size: 0.85rem; margin-top: 12px; text-align: center; }
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -275px;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    transition: 0.3s;
+  }
+  .sidebar.open { left: 0; }
+  .mobile-menu-btn { display: inline-block; }
+  .main-content { padding: 16px; }
+  .galaxy-login-card { padding: 28px 20px; }
+}
+/* ===== TAB METODE PEMBAYARAN (QRIS & TRANSFER BANK) ===== */
+.pay-method-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.method-tab-btn {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: rgba(5, 10, 24, 0.65);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.method-tab-btn.active {
+  background: linear-gradient(90deg, rgba(23, 185, 230, 0.22), rgba(116, 86, 241, 0.22));
+  border-color: var(--cyan-aurora);
+  color: var(--star-white);
+}
+
+.transfer-container {
+  background: rgba(5, 10, 24, 0.72);
+  border: 1px solid var(--violet-light);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.bank-info-card {
+  background: rgba(16, 36, 70, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bank-name-badge {
+  align-self: flex-start;
+  background: rgba(23, 185, 230, 0.2);
+  color: var(--cyan-aurora);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.rek-number-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.rek-number {
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+  color: var(--star-white);
+  font-family: monospace;
+}
+/* ===== TOMBOL OCEAN & QRIS DINAMIS ===== */
+.btn-ocean {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid var(--cyan-aurora);
+  background: rgba(23, 185, 230, 0.18);
+  color: var(--cyan-aurora);
+  transition: all 0.2s ease;
+}
+
+.btn-ocean:hover {
+  background: var(--cyan-aurora);
+  color: #050a18;
+}
+
+.qris-container {
+  background: rgba(5, 10, 24, 0.72);
+  border: 1px solid var(--cyan-aurora);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.qris-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.84rem;
+}
+
+.qris-timer-badge {
+  background: rgba(251, 113, 133, 0.2);
+  border: 1px solid #fb7185;
+  color: #fb7185;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.qris-box {
+  width: 210px;
+  height: 210px;
+  margin: 0 auto 10px;
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

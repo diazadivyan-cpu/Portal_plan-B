@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Absensi & Kas Kelas — R3S Universitas Indraprasta</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <!-- Animasi Latar Belakang Galaksi & Antariksa -->
+  <div class="galaxy-bg">
+    <div class="nebula-glow nebula-1"></div>
+    <div class="nebula-glow nebula-2"></div>
+    <div class="stars-layer"></div>
+    <div class="shooting-stars">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <!-- ================= HALAMAN LOGIN & LUPA SANDI (TEMA GALAKSI) ================= -->
+  <section id="login-section" class="auth-wrapper">
+    <div class="galaxy-login-card animate-card-in">
+      <div class="card-top-beam"></div>
+
+      <div class="logo-orbit">
+        <img src="R3S logo/logo-r3s.jpg" alt="Logo Kelas R3S" />
+      </div>
+
+      <div class="brand-header">
+        <h2 class="app-name">Absensi & Kas Kelas</h2>
+        <p class="app-campus">R3S - Universitas Indraprasta</p>
+      </div>
+
+      <!-- Form Login Username -->
+      <form id="login-form">
+        <div class="login-heading">
+          <h1>Masuk ke akun</h1>
+          <p>Masuk dengan akun yang telah terdaftar untuk kelas ini.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" placeholder="Masukkan username terdaftar" required />
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Masukkan kata sandi" required />
+        </div>
+
+        <button type="submit" class="btn-galaxy-submit w-100">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          <span>Masuk</span>
+        </button>
+
+        <div class="auth-links">
+          <button type="button" id="btn-show-forgot" class="link-btn">Lupa Password?</button>
+        </div>
+        <p id="login-error" class="error-msg"></p>
+      </form>
+
+      <!-- Form Lupa Kata Sandi (Reset Otomatis via Username) -->
+      <div id="forgot-box" class="hidden">
+        <div class="login-heading">
+          <h1>Reset Password</h1>
+          <p>Masukkan username Anda untuk mengatur ulang sandi.</p>
+        </div>
+
+        <form id="form-cek-username">
+          <div class="form-group">
+            <label for="forgot-username">Username Terdaftar</label>
+            <input type="text" id="forgot-username" placeholder="Contoh: admin / agil_r3s" required />
+          </div>
+          <button type="submit" class="btn-nebula w-100">Verifikasi & Reset Sandi</button>
+        </form>
+
+        <form id="form-buat-sandi-baru" class="hidden mt-15">
+          <p class="text-cyan small-info" id="reset-user-label"></p>
+          <div class="form-group">
+            <label for="reset-new-password">Buat Password Baru</label>
+            <input type="password" id="reset-new-password" placeholder="Minimal 4 karakter" minlength="4" required />
+          </div>
+          <div class="form-group">
+            <label for="reset-confirm-password">Ulangi Password Baru</label>
+            <input type="password" id="reset-confirm-password" placeholder="Ulangi password baru" minlength="4" required />
+          </div>
+          <button type="submit" class="btn-galaxy-submit w-100">Simpan Password Baru</button>
+        </form>
+
+        <div class="auth-links">
+          <button type="button" id="btn-back-login" class="link-btn">← Kembali ke Masuk</button>
+        </div>
+        <p id="forgot-msg" class="error-msg"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= APLIKASI UTAMA (SPA) ================= -->
+  <div id="app-container" class="app-layout hidden">
+    <!-- Sidebar Navigasi -->
+    <aside class="sidebar glass-panel" id="sidebar">
+      <div class="sidebar-header">
+        <img src="R3S logo/logo-r3s.jpg" alt="Logo R3S" class="sidebar-logo" />
+        <div>
+          <h2>R3S PORTAL</h2>
+          <span id="badge-role" class="role-badge">ROLE</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu" id="nav-menu"></nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-box">
+          <img id="sidebar-avatar" src="R3S logo/logo-r3s.jpg" alt="Foto Profil" class="user-avatar-sm" />
+          <div class="user-mini-info">
+            <strong id="sidebar-nama">Nama Pengguna</strong>
+            <small id="sidebar-npm">NPM: -</small>
+            <small class="text-cyan" id="sidebar-username">@username</small>
+          </div>
+        </div>
+        <button id="btn-logout" class="btn-nebula-outline w-100">Keluar</button>
+      </div>
+    </aside>
+
+    <!-- Konten Utama -->
+    <main class="main-content">
+      <!-- Topbar Global dengan Jam Real-Time di Semua Akun -->
+      <header class="topbar glass-panel">
+        <div class="topbar-left">
+          <button id="btn-toggle-sidebar" class="mobile-menu-btn">☰</button>
+          <h3 id="page-title">Dashboard</h3>
+        </div>
+        <div class="live-clock-widget">
+          <span class="pulse-dot"></span>
+          <span id="global-clock">Memuat waktu WIB...</span>
+        </div>
+      </header>
+
+      <!-- 1. TAB DASHBOARD (Semua Role) -->
+      <section id="tab-dashboard" class="tab-content">
+        <div class="stats-grid">
+          <div class="glass-card stat-card hover-lift">
+            <span class="stat-label">Saldo Kas Kelas R3S</span>
+            <h2 class="stat-value text-cyan" id="stat-saldo">Rp 0</h2>
+            <small class="stat-sub">Transparansi Real-Time</small>
+          </div>
+          <div class="glass-card stat-card hover-lift">
+            <span class="stat-label">Kehadiran Pribadi</span>
+            <h2 class="stat-value text-pearl" id="stat-kehadiran">100%</h2>
+            <small class="stat-sub" id="stat-kehadiran-detail">0 Hadir | 0 Izin/Sakit | 0 Alpha</small>
+          </div>
+          <div class="glass-card stat-card hover-lift">
+            <span class="stat-label">Status Iuran Pribadi</span>
+            <h2 class="stat-value text-violet" id="stat-tunggakan">Rp 0</h2>
+            <small class="stat-sub" id="stat-tunggakan-info">Tagihan belum lunas</small>
+          </div>
+        </div>
+
+        <div class="glass-card mt-20">
+          <h4>Mutasi Kas Kelas Terkini (Transparansi)</h4>
+          <div class="table-responsive">
+            <table class="galaxy-table">
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Jenis</th>
+                  <th>Keterangan</th>
+                  <th>Nominal</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-mutasi-dashboard"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. TAB ABSENSI REAL-TIME MAHASISWA -->
+      <section id="tab-absen-mahasiswa" class="tab-content hidden">
+        <div class="grid-2-col">
+          <div class="glass-card">
+            <h4>Absensi Selfie Real-Time</h4>
+            <p class="text-muted mb-10">Wajib menggunakan kamera langsung & mengaktifkan GPS terkini.</p>
+
+            <div class="form-group">
+              <label for="select-sesi-aktif">Pilih Sesi Mata Kuliah Aktif</label>
+              <select id="select-sesi-aktif"></select>
+            </div>
+
+            <div class="gps-status-box" id="gps-status-box">
+              📍 Mendeteksi koordinat GPS terkini...
+            </div>
+
+            <div class="camera-wrapper">
+              <video id="camera-video" autoplay playsinline></video>
+              <canvas id="watermark-canvas" class="hidden"></canvas>
+              <img id="photo-preview" class="hidden" alt="Hasil Foto Absensi" />
+            </div>
+
+            <div class="camera-controls">
+              <button type="button" id="btn-start-camera" class="btn-cyan-outline">Aktifkan Kamera</button>
+              <button type="button" id="btn-capture-photo" class="btn-galaxy-submit" disabled>Ambil Foto & Absen</button>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h4>Pengajuan Izin / Sakit Mandiri</h4>
+            <form id="form-pengajuan-izin">
+              <div class="form-group">
+                <label>Pilih Sesi Mata Kuliah</label>
+                <select id="izin-sesi-id" required></select>
+              </div>
+              <div class="form-group">
+                <label>Jenis Ketidakhadiran</label>
+                <select id="izin-jenis" required>
+                  <option value="Izin">Izin</option>
+                  <option value="Sakit">Sakit</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Keterangan / Alasan</label>
+                <textarea id="izin-alasan" rows="3" placeholder="Tuliskan alasan detail..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label>Lampiran Bukti / Surat Dokter (Opsional)</label>
+                <input type="file" id="izin-file" accept="image/*" />
+              </div>
+              <button type="submit" class="btn-nebula w-100">Kirim Pengajuan</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. TAB KELOLA ABSENSI (Ketua & Admin) -->
+      <section id="tab-kelola-absensi" class="tab-content hidden">
+        <div class="glass-card mb-20">
+          <h4>Buka Sesi Absensi Baru</h4>
+          <form id="form-buat-sesi" class="inline-form">
+            <input type="text" id="sesi-matkul" placeholder="Nama Mata Kuliah / Pertemuan" required />
+            <input type="datetime-local" id="sesi-batas" required />
+            <button type="submit" class="btn-galaxy-submit">Buka Sesi</button>
+          </form>
+        </div>
+
+        <div class="glass-card mb-20">
+          <h4>Verifikasi Pengajuan Izin / Sakit Mahasiswa</h4>
+          <div class="table-responsive">
+            <table class="galaxy-table">
+              <thead>
+                <tr>
+                  <th>Mahasiswa</th>
+                  <th>Mata Kuliah</th>
+                  <th>Jenis & Alasan</th>
+                  <th>Bukti</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-verifikasi-izin"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="glass-card mb-20">
+          <h4>Catat Absensi Manual (Hadir / Izin / Sakit / Alpha)</h4>
+          <form id="form-manual-absensi" class="grid-form">
+            <div class="form-group">
+              <label>Pilih Sesi Mata Kuliah</label>
+              <select id="manual-sesi-id" required></select>
+            </div>
+            <div class="form-group">
+              <label>Pilih Mahasiswa</label>
+              <select id="manual-mhs-id" required></select>
+            </div>
+            <div class="form-group">
+              <label>Status Kehadiran</label>
+              <select id="manual-status" required>
+                <option value="Hadir">Hadir</option>
+                <option value="Izin">Izin</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Alpha">Alpha</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Keterangan / Catatan</label>
+              <input type="text" id="manual-keterangan" placeholder="Contoh: Tanpa keterangan / Kendala HP" />
+            </div>
+            <div class="form-group flex-end">
+              <button type="submit" class="btn-galaxy-submit w-100">+ Simpan Absensi</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="glass-card">
+          <h4>Monitoring & Edit Kehadiran Mahasiswa</h4>
+          <div class="table-responsive">
+            <table class="galaxy-table">
+              <thead>
+                <tr>
+                  <th>Waktu Absen</th>
+                  <th>NPM & Nama</th>
+                  <th>Mata Kuliah</th>
+                  <th>Status & Keterangan</th>
+                  <th>Bukti Foto & GPS</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-monitoring-absensi"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. TAB UANG KAS MAHASISWA -->
+      <section id="tab-kas-mahasiswa" class="tab-content hidden">
+        <div class="glass-card">
+          <h4>Tagihan Iuran Kas Saya</h4>
+          <div class="table-responsive">
+            <table class="galaxy-table">
+              <thead>
+                <tr>
+                  <th>Periode</th>
+                  <th>Nominal</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-tagihan-saya"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. TAB KELOLA KAS (Bendahara & Admin) -->
+      <section id="tab-kelola-kas" class="tab-content hidden">
+        <div class="grid-2-col mb-20">
+          <div class="glass-card">
+            <h4>Buat Tagihan Iuran Massal</h4>
+            <form id="form-tagihan-massal">
+              <div class="form-group">
+                <label>Nama Periode</label>
+                <input type="text" id="kas-periode" placeholder="Contoh: Minggu 2 - Nov 2026" required />
+              </div>
+              <div class="form-group">
+                <label>Nominal Iuran (Rp)</label>
+                <input type="number" id="kas-nominal" value="10000" required />
+              </div>
+              <button type="submit" class="btn-galaxy-submit w-100">Terbitkan Tagihan Kelas</button>
+            </form>
+          </div>
+
+          <div class="glass-card">
+            <h4>Catat Pemasukan / Pengeluaran Kas</h4>
+            <form id="form-transaksi-kas">
+              <div class="form-group">
+                <label>Jenis Transaksi</label>
+                <select id="trans-jenis">
+                  <option value="Pemasukan">Pemasukan Lainnya</option>
+                  <option value="Pengeluaran">Pengeluaran Kelas</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Nominal (Rp)</label>
+                <input type="number" id="trans-nominal" required />
+              </div>
+              <div class="form-group">
+                <label>Keterangan Keperluan</label>
+                <input type="text" id="trans-keterangan" placeholder="Contoh: Print makalah / Fotokopi" required />
+              </div>
+              <button type="submit" class="btn-nebula w-100">Simpan ke Buku Kas</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h4>Verifikasi Pembayaran Iuran Mahasiswa</h4>
+          <div class="table-responsive">
+            <table class="galaxy-table">
+              <thead>
+                <tr>
+                  <th>Mahasiswa</th>
+                  <th>Periode</th>
+                  <th>Nominal</th>
+                  <th>Status</th>
+                  <th>Bukti & Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-verifikasi-kas"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. TAB MANAJEMEN AKUN & SANDI (Khusus Admin) -->
+      <section id="tab-admin-users" class="tab-content hidden">
+        <div class="glass-card mb-20">
+          <h4>Pengaturan Rekening Transfer Kas (Khusus Admin)</h4>
+          <form id="form-admin-rekening" class="grid-form">
+            <div class="form-group">
+              <label>Nama Bank / E-Wallet</label>
+              <input type="text" id="admin-nama-bank" placeholder="Contoh: BCA / BRI / Bank Jago" required />
+            </div>
+            <div class="form-group">
+              <label>Nomor Rekening</label>
+              <input type="text" id="admin-no-rek" placeholder="Contoh: 1234567890" required />
+            </div>
+            <div class="form-group">
+              <label>Atas Nama Pemilik</label>
+              <input type="text" id="admin-atas-nama" placeholder="Nama Pemilik Rekening" required />
+            </div>
+            <div class="form-group flex-end">
+              <button type="submit" class="btn-galaxy-submit w-100">💾 Simpan Rekening</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="glass-card mb-20">
+          <h4>Buat Akun Baru (Eksklusif Admin)</h4>
+          <form id="form-admin-create-user" class="grid-form">
+            <div class="form-group">
+              <label>NPM</label>
+              <input type="text" id="new-npm" placeholder="Contoh: 202043515954" required />
+            </div>
+            <div class="form-group">
+              <label>Nama Lengkap</label>
+              <input type="text" id="new-nama" placeholder="Nama Mahasiswa" required />
+            </div>
+            <div class="form-group">
+              <label>Username Login</label>
+              <input type="text" id="new-username" placeholder="Username unik" required />
+            </div>
+            <div class="form-group">
+              <label>Kata Sandi Awal</label>
+              <input type="text" id="new-password" placeholder="Sandi awal" required />
+            </div>
+            <div class="form-group">
+              <label>Role Akun</label>
+              <select id="new-role">
+                <option value="mahasiswa">Mahasiswa</option>
+                <option value="ketua">Ketua Kelas</option>
+                <option value="bendahara">Bendahara</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="form-group flex-end">
+              <button type="submit" class="btn-galaxy-submit w-100">+ Buat Akun</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="glass-card">
+          <h4>Daftar Semua Akun (Lihat & Ubah Sandi / Role)</h4>
+          <div class="table-responsive">
+            <table class="galaxy-table">
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>NPM</th>
+                  <th>Nama</th>
+                  <th>Username</th>
+                  <th>Kata Sandi</th>
+                  <th>Role</th>
+                  <th>Aksi Sandi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-admin-users"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. TAB PROFIL & KEAMANAN -->
+      <section id="tab-profil-saya" class="tab-content hidden">
+        <div class="glass-card max-500">
+          <h4>Pengaturan Foto Profil, Username & Sandi</h4>
+          <p class="text-muted mb-15">Setiap pengguna dapat memperbarui foto profil, username, dan kata sandi secara mandiri.</p>
+
+          <form id="form-update-profil">
+            <div class="profile-avatar-editor">
+              <div class="avatar-preview-ring">
+                <img id="profil-avatar-preview" src="R3S logo/logo-r3s.jpg" alt="Preview Foto Profil" />
+              </div>
+              <div class="avatar-upload-controls">
+                <label for="profil-avatar-file" class="btn-cyan-outline btn-sm">📷 Pilih Foto Baru</label>
+                <input type="file" id="profil-avatar-file" accept="image/*" class="hidden" />
+                <small class="text-muted">Format JPG/PNG (Maks. 2MB)</small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Nama Lengkap (Read-Only)</label>
+              <input type="text" id="profil-nama" disabled />
+            </div>
+            <div class="form-group">
+              <label>NPM (Read-Only)</label>
+              <input type="text" id="profil-npm" disabled />
+            </div>
+            <div class="form-group">
+              <label>Username Login</label>
+              <input type="text" id="profil-username" required />
+            </div>
+            <div class="form-group">
+              <label>Kata Sandi</label>
+              <input type="text" id="profil-password" required />
+            </div>
+            <button type="submit" class="btn-galaxy-submit w-100" id="btn-save-profil">Simpan Perubahan Profil</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Bayar Kas Mahasiswa (QRIS Dinamis & Transfer Bank) -->
+  <div id="modal-bayar-kas" class="modal-backdrop hidden">
+    <div class="glass-card modal-box animate-card-in">
+      <h4>Pembayaran Iuran Kas Kelas R3S</h4>
+      <p id="modal-kas-info" class="text-cyan mb-10"></p>
+
+      <!-- Pilihan Metode Pembayaran -->
+      <div class="pay-method-tabs">
+        <button type="button" id="btn-tab-qris" class="method-tab-btn active">📱 QRIS Dinamis</button>
+        <button type="button" id="btn-tab-transfer" class="method-tab-btn">🏦 Transfer Bank</button>
+      </div>
+
+      <!-- Panel 1: QRIS Dinamis (Nominal Bisa Diubah Mahasiswa) -->
+      <div id="panel-metode-qris" class="qris-container">
+        <div class="qris-header">
+          <strong>QRIS — Mas_hy, Fashion (CIREBON)</strong>
+          <span class="qris-timer-badge" id="qris-countdown">05:00</span>
+        </div>
+
+        <div class="form-group mb-10" style="text-align: left;">
+          <label for="input-nominal-qris" style="font-size: 0.8rem;">Nominal Pembayaran QRIS (Rp) — Bisa Diubah</label>
+          <input type="number" id="input-nominal-qris" min="1000" step="500" placeholder="Masukkan nominal bayar" />
+        </div>
+
+        <div id="qris-canvas-box" class="qris-box"></div>
+        <small class="text-muted">Nominal otomatis terisi saat di-scan (GoPay, OVO, DANA, ShopeePay, m-Banking).</small>
+        <div class="mt-10">
+          <button type="button" id="btn-download-qris" class="btn-cyan-outline btn-sm">⬇️ Unduh Gambar QRIS</button>
+        </div>
+      </div>
+
+      <!-- Panel 2: Transfer Bank -->
+      <div id="panel-metode-transfer" class="transfer-container hidden">
+        <p class="text-muted mb-10">Silakan transfer sesuai nominal tagihan ke rekening resmi kelas berikut:</p>
+        <div class="bank-info-card">
+          <span class="bank-name-badge" id="display-nama-bank">Memuat Bank...</span>
+          <div class="rek-number-row">
+            <strong id="display-no-rek" class="rek-number">-</strong>
+            <button type="button" id="btn-copy-rek" class="btn-cyan-outline btn-sm">📋 Salin</button>
+          </div>
+          <small class="text-pearl">a.n. <strong id="display-atas-nama">-</strong></small>
+        </div>
+      </div>
+
+      <form id="form-upload-bayar" class="mt-15">
+        <input type="hidden" id="bayar-iuran-id" />
+        <input type="hidden" id="bayar-metode-terpilih" value="QRIS Dinamis" />
+        <div class="form-group">
+          <label>Upload Bukti Pembayaran / Screenshot Berhasil</label>
+          <input type="file" id="bayar-bukti-file" accept="image/*" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-close-modal" class="btn-nebula-outline">Batal</button>
+          <button type="submit" class="btn-galaxy-submit" id="btn-submit-qris">Kirim Bukti Bayar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Admin Ubah Sandi User -->
+  <div id="modal-admin-sandi" class="modal-backdrop hidden">
+    <div class="glass-card modal-box animate-card-in">
+      <h4>Ubah Kata Sandi Pengguna</h4>
+      <p id="modal-admin-user-info" class="text-cyan mb-10"></p>
+      <form id="form-admin-edit-sandi">
+        <input type="hidden" id="edit-sandi-userid" />
+        <div class="form-group">
+          <label>Kata Sandi Baru</label>
+          <input type="text" id="edit-sandi-baru" placeholder="Masukkan sandi baru" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-close-admin-modal" class="btn-nebula-outline">Batal</button>
+          <button type="submit" class="btn-galaxy-submit">Simpan Sandi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Edit Absensi (Khusus Admin & Ketua) -->
+  <div id="modal-edit-absensi" class="modal-backdrop hidden">
+    <div class="glass-card modal-box animate-card-in">
+      <h4>Edit Data Absensi Mahasiswa</h4>
+      <p id="modal-edit-absen-info" class="text-cyan mb-15"></p>
+      <form id="form-edit-absensi">
+        <input type="hidden" id="edit-absen-id" />
+        <div class="form-group">
+          <label for="edit-absen-status">Status Kehadiran</label>
+          <select id="edit-absen-status" required>
+            <option value="Hadir">Hadir</option>
+            <option value="Izin">Izin</option>
+            <option value="Sakit">Sakit</option>
+            <option value="Alpha">Alpha</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-absen-keterangan">Keterangan / Alasan</label>
+          <textarea id="edit-absen-keterangan" rows="3" placeholder="Tuliskan keterangan perubahan..."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-close-edit-absen" class="btn-nebula-outline">Batal</button>
+          <button type="submit" class="btn-galaxy-submit">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
